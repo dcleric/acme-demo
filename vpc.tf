@@ -12,15 +12,10 @@ resource "aws_internet_gateway" "vpc" {
 }
 resource "aws_subnet" "private_subnet"{
   vpc_id             = "${aws_vpc.vpc.id}"
-  cidr_block         = "${var.private_subnet_cidr}"
-  availability_zone = "${var.availability_zone}"
+  cidr_block         = "${element(var.private_subnet_cidr, count.index)}"
+  availability_zone = "${element(var.availability_zones, count.index)}"
   map_public_ip_on_launch = true
-}
-
-resource "aws_subnet" "public_subnet"{
-  vpc_id             = "${aws_vpc.vpc.id}"
-  cidr_block         = "${var.public_subnet_cidr}"
-  availability_zone = "${var.availability_zone}"
+  count             = "${length(var.private_subnet_cidr)}"
 }
 
 resource "aws_route_table" "route_table" {
@@ -35,7 +30,8 @@ resource "aws_route" "route" {
 }
 
 resource "aws_route_table_association" "subnet" {
-  subnet_id      = "${aws_subnet.private_subnet.id}"
+  subnet_id      = "${element(data.aws_subnet_ids.vpc_subnet_ids.ids, count.index)}"
   route_table_id = "${aws_route_table.route_table.id}"
+  count             = "${length(var.private_subnet_cidr)}"
 }
 

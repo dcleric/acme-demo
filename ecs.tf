@@ -8,14 +8,24 @@ resource "aws_ecs_task_definition" "acme-ecs-task" {
 [
   {
     "name": "acme-licensing",
-    "image": "nginx:alpine",
-    "cpu": 0,
-    "memory": 128,
-      "portMappings": [
+    "image": "${var.ecs_container_image_tag}",
+    "networkMode": "bridge",
+    "cpu": ${var.ecs_container_cpu},
+    "memory": ${var.ecs_container_mem},
+    "portMappings": [
         {
-          "containerPort": 80,
+          "containerPort": ${var.ecs_container_port},
           "protocol": "tcp"
         }
+      ],
+    "placementStrategy": [
+      {
+        "field": "attribute:ecs.availability-zone",
+        "type": "spread"
+      }
+      ],
+    "environment": [
+       { "name" : "LIC_DURATION_DAYS", "value" : "${var.env_lic_duration_days}" }
       ]
 }
 ]
@@ -27,8 +37,13 @@ resource "aws_ecs_service" "acme-service-ecs" {
   cluster         = "${aws_ecs_cluster.acme-ecs-cluster.name}"
   task_definition = "${aws_ecs_task_definition.acme-ecs-task.arn}"
 
-  desired_count = 1
+  desired_count = "${var.ecs_desired_count}"
+  load_balancer {
+    target_group_arn = "${aws_alb_target_group.acme-lb-targetgroup.arn}"
+    container_name = "${var.ecs_container_name}"
+    container_port = "${var.ecs_container_port}"
+  }
 
   deployment_maximum_percent         = 100
-  deployment_minimum_healthy_percent = 0
+  deployment_minimum_healthy_percent = 50
 }

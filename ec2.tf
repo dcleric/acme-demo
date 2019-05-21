@@ -47,14 +47,14 @@ resource "aws_security_group_rule" "inbound_lb_to_ecs_access" {
 
 resource "aws_launch_configuration" "ecs-launch" {
   name = "${var.name}-ecs-launch"
-  key_name = "pm-key2"
-  instance_type = "t2.micro"
+  key_name = "${var.ec2_key_name}"
+  instance_type = "${var.ec2_flavor}"
   image_id = "ami-06a20f16dd2f50741"
   user_data = "${data.template_file.user_data.rendered}"
   security_groups = ["${aws_security_group.instance.id}"]
   iam_instance_profile = "${aws_iam_instance_profile.this.id}"
   root_block_device {
-    volume_size = 8
+    volume_size = "${var.ec2_root_volume}"
   }
 
   lifecycle {
@@ -63,12 +63,11 @@ resource "aws_launch_configuration" "ecs-launch" {
 }
 resource "aws_autoscaling_group" "asg-launch" {
   name = "acme-asg"
-  max_size = 2
-  min_size = 1
+  max_size = "${var.ec2_asg_max_size}"
+  min_size = "${var.ec2_asg_min_size}"
 
   launch_configuration = "${aws_launch_configuration.ecs-launch.id}"
-  #availability_zones = ["eu-central-1"]
-  vpc_zone_identifier = ["${aws_subnet.private_subnet.id}"]
+  vpc_zone_identifier = ["${data.aws_subnet_ids.vpc_subnet_ids.ids}"]
   lifecycle {
     create_before_destroy = true
   }
