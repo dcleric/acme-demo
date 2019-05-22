@@ -1,1 +1,1 @@
-Sample service
+Sample aws service for ACME licensing
