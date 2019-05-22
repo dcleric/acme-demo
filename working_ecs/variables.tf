@@ -1,5 +1,5 @@
 data "template_file" "user_data" {
-  template = "${file("templates/user_data.sh")}"
+  template = "${file("working_ecs/templates/user_data.sh")}"
 
   vars {
     cluster_name = "${var.ecs_cluster_name}"
@@ -10,6 +10,10 @@ data "aws_subnet_ids" "vpc_subnet_ids" {
   vpc_id = "${aws_vpc.vpc.id}"
   depends_on = [
   "aws_subnet.private_subnet"]
+}
+
+variable "aws_region" {
+  default = "eu-central-1"
 }
 
 variable "ecs_cluster_name" {
@@ -42,13 +46,17 @@ variable "env_lic_duration_days"{
 
 # EC2
 variable "ec2_key_name" {
-  default = "pm-key2"
+  default = "ecs-key"
+}
+
+variable "ec2_key" {
+  default = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCrf9ROR2h7JR09tSWav8YT9uQ2N/HHB92vWPay6D90N9kR/j8W2/5rVd8MPaYQwJxAMQgU6qyhnWefKPVCYqxHD2EFWNR23yPdkCeA9V4SWq7xKnHABU8hM6lF6Wd+ptRb6MsBBLqLE/x4svh3DKkLIPMrVao+pzhjT9PzzSG1u2VfTQBaPZKtxWrOltObYoatXJoRPfe1qJIbsQypUZQt5CnnsjAgQlvh3GTgiunUgPVViJ6PxjpQrYrwErS82TIHZCttDhffeXP/o91uvcjr0nkGRzNN1CSKy8L5YmI/BlwaFahnuIeQpBQ7BquRi5CZ9WzM040ZdazLrhDtyrET ecs@aws.key"
 }
 
 variable "ec2_flavor" {
   default = "t2.micro"
 }
-// TODO Different image for different region
+
 variable "ec2_image_name" {
   default = "ami-06a20f16dd2f50741"
 }
@@ -84,4 +92,8 @@ variable "ecs_container_port"{
 }
 variable "ecs_container_image_tag" {
   default = "nginx:alpine"
+}
+
+variable "iam_ecs_profile" {
+  default = "profile"
 }

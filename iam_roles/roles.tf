@@ -1,5 +1,5 @@
-resource "aws_iam_role" "this" {
-  name = "${var.name}_ecs_instance_role"
+resource "aws_iam_role" "ecs_instance_role" {
+  name = "ecs_instance_role"
   path = "/ecs/"
 
   assume_role_policy = <<EOF
@@ -18,12 +18,12 @@ resource "aws_iam_role" "this" {
 EOF
 }
 
-resource "aws_iam_instance_profile" "this" {
-  name = "${var.name}_ecs_instance_profile"
-  role = "${aws_iam_role.this.id}"
+resource "aws_iam_instance_profile" "ecs_instance_profile" {
+  name = "ecs_instance_profile"
+  role = "${aws_iam_role.ecs_instance_role.id}"
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_ec2_role" {
-  role       = "${aws_iam_role.this.id}"
+  role       = "${aws_iam_role.ecs_instance_role.id}"
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
 }

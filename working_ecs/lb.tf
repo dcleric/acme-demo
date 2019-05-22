@@ -1,5 +1,5 @@
 resource "aws_lb" "acme-loadbalancer" {
-  name = "acme-loadbalancer"
+  name = "acme-loadbalancer-${var.aws_region}"
   internal = false
   load_balancer_type = "application"
   security_groups = ["${aws_security_group.load-balancer-sg.id}"]
@@ -10,10 +10,6 @@ resource "aws_security_group" "load-balancer-sg" {
   name        = "load-balancer-sg"
   description = "Loadbalancer security group"
   vpc_id      = "${aws_vpc.vpc.id}"
-
-  tags {
-    Environment   = "${var.environment}"
-  }
 }
 
 resource "aws_security_group_rule" "inbound_lb_access" {
@@ -36,7 +32,7 @@ resource "aws_security_group_rule" "outbound_lb_access" {
 
 
 resource "aws_alb_target_group" "acme-lb-targetgroup" {
-  name = "acme-lb-targetgroup"
+  name = "acme-lb-targetgroup-${var.aws_region}"
   protocol = "HTTP"
   port = "80"
   vpc_id = "${aws_vpc.vpc.id}"

@@ -1,4 +1,9 @@
 
+resource "aws_key_pair" "ecs" {
+  key_name   = "${var.ec2_key_name}"
+  public_key = "${var.ec2_key}"
+}
+
 resource "aws_security_group" "instance" {
   name        = "${var.name}"
   description = "Used in prod"
@@ -46,13 +51,13 @@ resource "aws_security_group_rule" "inbound_lb_to_ecs_access" {
 }
 
 resource "aws_launch_configuration" "ecs-launch" {
-  name = "${var.name}-ecs-launch"
+  name = "ecs-launch-${var.aws_region}"
   key_name = "${var.ec2_key_name}"
   instance_type = "${var.ec2_flavor}"
-  image_id = "ami-06a20f16dd2f50741"
+  image_id = "${var.ec2_image_name}"
   user_data = "${data.template_file.user_data.rendered}"
   security_groups = ["${aws_security_group.instance.id}"]
-  iam_instance_profile = "${aws_iam_instance_profile.this.id}"
+  iam_instance_profile = "${var.iam_ecs_profile}"
   root_block_device {
     volume_size = "${var.ec2_root_volume}"
   }
@@ -62,7 +67,7 @@ resource "aws_launch_configuration" "ecs-launch" {
   }
 }
 resource "aws_autoscaling_group" "asg-launch" {
-  name = "acme-asg"
+  name = "acme-asg-${var.aws_region}"
   max_size = "${var.ec2_asg_max_size}"
   min_size = "${var.ec2_asg_min_size}"
 
