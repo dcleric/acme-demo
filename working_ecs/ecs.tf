@@ -4,6 +4,7 @@ resource "aws_ecs_cluster" "acme-ecs-cluster" {
 
 resource "aws_ecs_task_definition" "acme-ecs-task" {
   family = "acme-ecs-task"
+
   container_definitions = <<EOF
 [
   {
@@ -38,10 +39,11 @@ resource "aws_ecs_service" "acme-service-ecs" {
   task_definition = "${aws_ecs_task_definition.acme-ecs-task.arn}"
 
   desired_count = "${var.ecs_desired_count}"
+
   load_balancer {
     target_group_arn = "${aws_alb_target_group.acme-lb-targetgroup.arn}"
-    container_name = "${var.ecs_container_name}"
-    container_port = "${var.ecs_container_port}"
+    container_name   = "${var.ecs_container_name}"
+    container_port   = "${var.ecs_container_port}"
   }
 
   deployment_maximum_percent         = 100
