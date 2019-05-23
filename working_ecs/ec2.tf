@@ -46,7 +46,6 @@ resource "aws_security_group_rule" "inbound_lb_to_ecs_access" {
 }
 
 resource "aws_launch_configuration" "ecs-launch" {
-  name                 = "ecs-launch-${var.aws_region}"
   key_name             = "${var.ec2_key_name}"
   instance_type        = "${var.ec2_flavor}"
   image_id             = "${var.ec2_image_name}"
@@ -64,10 +63,9 @@ resource "aws_launch_configuration" "ecs-launch" {
 }
 
 resource "aws_autoscaling_group" "asg-launch" {
-  name     = "acme-asg-${var.aws_region}"
-  max_size = "${var.ec2_asg_max_size}"
-  min_size = "${var.ec2_asg_min_size}"
-
+  name                 = "acme-asg-${var.aws_region}"
+  max_size             = "${var.ec2_asg_max_size}"
+  min_size             = "${var.ec2_asg_min_size}"
   launch_configuration = "${aws_launch_configuration.ecs-launch.id}"
   vpc_zone_identifier  = ["${data.aws_subnet_ids.vpc_subnet_ids.ids}"]
 
