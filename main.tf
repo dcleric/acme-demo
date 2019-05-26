@@ -16,7 +16,11 @@ module "working_ecs" {
 
   aws_region         = "eu-central-1"
   availability_zones = ["eu-central-1a", "eu-central-1b"]
+  ec2_asg_min_size = 1
   iam_ecs_profile    = "${module.iam_roles.iam_ecs_profile}"
+  ecs_container_port = 9000
+  ecs_container_image_tag = "dcleric/acme-demo:0.6"
+  env_lic_duration_days = "3"
 }
 
 # US region rollout
@@ -30,7 +34,11 @@ module "working_ecs_us" {
   aws_region         = "us-east-1"
   availability_zones = ["us-east-1a", "us-east-1b"]
   ec2_image_name     = "ami-0750ab1027b6314c7"
+  ec2_asg_min_size = 1
   iam_ecs_profile    = "${module.iam_roles.iam_ecs_profile}"
+  ecs_container_port = 9000
+  ecs_container_image_tag = "dcleric/acme-demo:0.6"
+  env_lic_duration_days = "3"
 }
 
 resource "aws_route53_record" "eu-acme-demo" {
