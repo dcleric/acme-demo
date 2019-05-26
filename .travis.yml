@@ -1,4 +1,12 @@
+language: python
+python: "2.7"
 dist: xenial
+addons:
+  apt:
+    sources:
+      - docker-xenial
+    packages:
+    - docker
 services:
   - docker
 
