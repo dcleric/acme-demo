@@ -1,0 +1,10 @@
+dist: xenial
+services:
+  - docker
+
+script:
+  - docker run -v "$PWD:$PWD" -w $PWD -i -t hashicorp/terraform:0.11.14 validate
+  - docker run -v "$PWD:$PWD" -w $PWD -i -t hashicorp/terraform:0.11.14 plan
+branches:
+  except:
+    - master
