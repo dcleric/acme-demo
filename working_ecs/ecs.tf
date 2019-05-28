@@ -26,7 +26,8 @@ resource "aws_ecs_task_definition" "acme-ecs-task" {
       }
       ],
     "environment": [
-       { "name" : "LIC_DURATION_DAYS", "value" : "${var.env_lic_duration_days}" }
+       { "name" : "LIC_DURATION_DAYS", "value" : "${var.env_lic_duration_days}"},
+       { "name" : "AWS_DEFAULT_REGION", "value" : "${var.aws_region}"}
       ]
 }
 ]
