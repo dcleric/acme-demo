@@ -11,19 +11,17 @@ package main
 
 import (
 	"bytes"
-	"compress/gzip"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
 	"crypto/x509/pkix"
+	"encoding/base64"
 	"encoding/json"
 	"encoding/pem"
 	"flag"
 	"fmt"
-	"io"
-	"io/ioutil"
 	"log"
 	"math/big"
 	"net"
@@ -41,7 +39,6 @@ var (
 	isCA       = flag.Bool("ca", false, "whether this cert should be its own Certificate Authority")
 	rsaBits    = flag.Int("rsa-bits", 2048, "Size of RSA key to generate. Ignored if --ecdsa-curve is set")
 	ecdsaCurve = flag.String("ecdsa-curve", "", "ECDSA curve to use to generate a key. Valid values are P224, P256 (recommended), P384, P521")
-	rootFile   = "root_cert.pem.gz"
 )
 
 type licHandler struct {
@@ -135,7 +132,7 @@ func (lh *licHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	template := x509.Certificate{
 		SerialNumber: serialNumber,
 		Subject: pkix.Name{
-			Organization: []string{"MI6 Grocery Inc."},
+			Organization: []string{"Acme Inc."},
 		},
 		NotBefore: notBefore,
 		NotAfter:  notAfter,
@@ -184,7 +181,7 @@ func (lh *licHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Print("Certificate key issued.\n")
-	license := License{certOut.String(), keyOut.String(), "", "This is your license, mr. Bond", notAfter.String(), lh.AWSRegion}
+	license := License{certOut.String(), keyOut.String(), "", "This is your license, with best regards from Acme Inc.", notAfter.String(), lh.AWSRegion}
 	js, err := json.Marshal(license)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -192,25 +189,6 @@ func (lh *licHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(js)
-}
-func gUnzipData(data []byte) (resData []byte, err error) {
-	b := bytes.NewBuffer(data)
-
-	var r io.Reader
-	r, err = gzip.NewReader(b)
-	if err != nil {
-		return
-	}
-
-	var resB bytes.Buffer
-	_, err = resB.ReadFrom(r)
-	if err != nil {
-		return
-	}
-
-	resData = resB.Bytes()
-
-	return
 }
 
 func main() {
@@ -223,23 +201,27 @@ func main() {
 	if AWSRegion == "" {
 		AWSRegion = "NO :("
 	}
+	rootCertEnv := os.Getenv("ROOT_CERTIFICATE")
+	if rootCertEnv == "" {
+		log.Fatalf("Cannot load root certificate from environment variable (mandatory)")
+	}
 	flag.Parse()
 
 	if len(*host) == 0 {
 		log.Fatalf("Missing required --host parameter")
 	}
-	gz, err := ioutil.ReadFile(rootFile)
+
+	r, err := base64.StdEncoding.DecodeString(rootCertEnv)
 	if err != nil {
-		log.Fatalf("Cannot load root certificate from file")
+		log.Fatalf("Cannot decode Base64 root certififcate", err)
 	}
-	r, _ := gUnzipData(gz)
 	block, _ := pem.Decode(r)
 	if err != nil {
-		log.Fatalf("Cannot decode root certificate")
+		log.Fatalf("Cannot decode PEM root certificate", err)
 	}
 	rootCert, _ := x509.ParseCertificate(block.Bytes)
-	log.Print("Loaded root certificate from archive")
-	log.Print("Ready to serve requests")
+	log.Print("Licensing service started")
+	log.Print("Ready to serve requests on :9000 port")
 
 	mux := http.NewServeMux()
 	lh := &licHandler{validFor: validForenv, rootCertificate: rootCert, AWSRegion: AWSRegion}
