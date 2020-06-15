@@ -54,6 +54,7 @@ type License struct {
 	Message   string
 	Duration  string
 	AWSRegion string
+	Version   string
 }
 
 func publicKey(priv interface{}) interface{} {
@@ -200,6 +201,10 @@ func main() {
 	AWSRegion := os.Getenv("AWS_DEFAULT_REGION")
 	if AWSRegion == "" {
 		AWSRegion = "NO :("
+	}
+	Version := os.Getenv("DEPLOYMENT_VERSION")
+	if Version == "" {
+		Version = "Not-specified"
 	}
 	rootCertEnv := os.Getenv("ROOT_CERTIFICATE")
 	if rootCertEnv == "" {

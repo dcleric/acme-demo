@@ -19,13 +19,8 @@ jobs:
         go-version: ^1.14
       id: go
 
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
-
     - name: Build
       run: CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -o licensing_service cmd/main.go
-    
-    - uses: actions/checkout@v2
 
     - run: mkdir -p acme-demo
 
