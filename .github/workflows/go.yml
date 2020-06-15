@@ -30,7 +30,7 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: licensing_service
-        path: acme-demo/
+        path: acme-demo/licensing_service
 
   build_docker:
     name: Create docker image
@@ -41,7 +41,6 @@ jobs:
     - uses: actions/download-artifact@v2
       with:
         name: licensing_service
-        path: licensing_service
 
     - uses: docker/build-push-action@v1
       with:
