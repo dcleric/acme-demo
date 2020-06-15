@@ -25,8 +25,9 @@ jobs:
       run: CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -o licensing_service cmd/licensing_service/main.go
 
     - run: mkdir -p acme-demo
+    - run: mv licensing_service acme-demo/
 
     - uses: actions/upload-artifact@v2
       with:
         name: licensing_service
-        path: acme-demo
+        path: acme-demo/
