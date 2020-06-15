@@ -20,7 +20,7 @@ jobs:
       id: go
 
     - name: Build
-      run: CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -o licensing_service cmd/main.go
+      run: CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -o licensing_service cmd/licensing_service/main.go
 
     - run: mkdir -p acme-demo
 
