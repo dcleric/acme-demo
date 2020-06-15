@@ -41,7 +41,7 @@ jobs:
     - uses: actions/download-artifact@v2
       with:
         name: licensing_service
-        path: acme-demo
+        path: licensing_service
 
     - uses: docker/build-push-action@v1
       with:
