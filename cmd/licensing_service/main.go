@@ -45,6 +45,7 @@ type licHandler struct {
 	validFor        time.Duration
 	rootCertificate *x509.Certificate
 	AWSRegion       string
+	Version         string
 }
 
 type License struct {
@@ -182,7 +183,7 @@ func (lh *licHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Print("Certificate key issued.\n")
-	license := License{certOut.String(), keyOut.String(), "", "This is your license, with best regards from Acme Inc.", notAfter.String(), lh.AWSRegion}
+	license := License{certOut.String(), keyOut.String(), "", "This is your license, with best regards from Acme Inc.", notAfter.String(), lh.AWSRegion, lh.Version}
 	js, err := json.Marshal(license)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
