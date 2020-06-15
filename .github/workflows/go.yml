@@ -19,6 +19,8 @@ jobs:
         go-version: ^1.14
       id: go
 
+    - uses: actions/checkout@v2
+
     - name: Build
       run: CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -o licensing_service cmd/licensing_service/main.go
 
