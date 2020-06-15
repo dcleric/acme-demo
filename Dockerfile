@@ -5,9 +5,7 @@ LABEL description="Sample SSL app" \
 
 USER nobody
 
-COPY gen_cert /gen_cert
+COPY acme-demo/licensing_serivce /licensing_service
 
-COPY root_cert.pem.gz /root_cert.pem.gz
-
-CMD ["/gen_cert", "--host=dev"]
+CMD ["/licensing_service", "--host=dev"]
 
