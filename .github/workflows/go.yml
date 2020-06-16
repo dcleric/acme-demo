@@ -26,8 +26,8 @@ jobs:
 
     - uses: actions/upload-artifact@v2
       with:
-        name: licensing_service
-        path: acme-demo
+        path: licensing_service
+        name: acme-demo
 
   build_docker:
     name: Create docker image

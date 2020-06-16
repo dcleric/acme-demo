@@ -5,7 +5,7 @@ LABEL description="Sample SSL app" \
 
 USER nobody
 
-COPY acme-demo/licensing_serivce /licensing_service
+COPY licensing_serivce /licensing_service
 
 CMD ["/licensing_service", "--host=dev"]
 
