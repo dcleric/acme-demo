@@ -8,7 +8,7 @@ on:
 
 jobs:
 
-  build:
+  build_binary:
     name: Build
     runs-on: ubuntu-latest
     steps:
@@ -24,23 +24,21 @@ jobs:
     - name: Build
       run: CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -o licensing_service cmd/licensing_service/main.go
 
-    - run: mkdir -p acme-demo
-    - run: mv licensing_service acme-demo/
-
     - uses: actions/upload-artifact@v2
       with:
         name: licensing_service
-        path: acme-demo/licensing_service
+        path: acme-demo
 
   build_docker:
     name: Create docker image
+    needs: build_binary
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
 
     - uses: actions/download-artifact@v2
       with:
-        name: licensing_service
+        name: acme-demo
 
     - uses: docker/build-push-action@v1
       with:
